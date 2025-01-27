@@ -8,7 +8,7 @@ extern "C" {
 
 // Test case for checking buffer overflow
 TEST(SensorTest, TestBufferOverflow) {
-    uint16_t *data = (uint16_t *)malloc(BUFFER_SIZE * sizeof(uint16_t));
+    uint16_t *data = (uint16_t *)malloc(BUFFER_SIZE );
     ASSERT_NE(data, nullptr);  // Ensure memory is allocated
     
     // Simulate the buffer overflow scenario
