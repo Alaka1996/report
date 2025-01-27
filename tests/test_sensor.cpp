@@ -1,7 +1,7 @@
 extern "C" {
     #include "utils.h"  // Include the C header for your C function
     #include "sensor.h"
-#define BUFFER_SIZE 10
+#define BUFFER_SIZE 11
 }
 
 #include <gtest/gtest.h>
