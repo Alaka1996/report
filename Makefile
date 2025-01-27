@@ -54,7 +54,7 @@ clean:
 
 # Run Cppcheck
 lint:
-	cppcheck --force --enable=all --inconclusive --std=c++17 -Iinclude -I/usr/include --suppress=missingIncludeSystem --suppress=syntaxError src/*.c
+	cppcheck --enable=all --inconclusive --std=c99 --force main.c
 
 # Run the tests (Google Test)
 test: $(BIN_DIR)/test_sensor
