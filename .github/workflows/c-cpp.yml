@@ -19,14 +19,16 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cppcheck
+          sudo apt-get install -y build-essential cppcheck git
 
       - name: Set up GoogleTest Submodule
         run: |
           git submodule update --init --recursive
 
       - name: Run Static Analysis (Cppcheck)
-        run: make lint  # Calls the 'lint' target from the Makefile
+        run: |
+          make lint  # This will call the 'lint' target from the Makefile
 
       - name: Run Unit Tests (GoogleTest)
-        run: make test  # Calls the 'test' target from the Makefile
+        run: |
+          make test  # This will call the 'test' target from the Makefile
