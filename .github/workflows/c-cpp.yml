@@ -1,4 +1,4 @@
-name: C CI
+name: Cppcheck and GoogleTest CI
 
 on:
   push:
@@ -9,31 +9,30 @@ on:
       - main
 
 jobs:
+  cppcheck:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Cppcheck
+      run: sudo apt install cppcheck
+
+    - name: Run cppcheck
+      run: cppcheck --enable=all --inconclusive --force --quiet .
+
   build:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Initialize submodules
-      run: git submodule update --init --recursive
+      uses: actions/checkout@v2
 
     - name: Install dependencies
-      run: sudo apt-get install -y build-essential cppcheck cmake
+      run: sudo apt-get update && sudo apt-get install -y build-essential libgtest-dev cmake
 
-    - name: Build Google Test
+    - name: Build and run tests
       run: |
-        mkdir -p third_party/googletest/build
-        cd third_party/googletest/build
-        cmake ..
-        make
-        sudo cp lib/libgtest*.a /usr/lib/
-
-    - name: Run Cppcheck
-      run: make cppcheck
-
-    - name: Build and Run Tests
-      run: |
-        make tests
+        cd your-repo
         make test
