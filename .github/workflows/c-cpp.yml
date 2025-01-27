@@ -3,10 +3,10 @@ name: Cppcheck Analysis
 on:
   push:
     branches:
-      - main  # Trigger on push to the main branch (or adjust as necessary)
+      - main
   pull_request:
     branches:
-      - main  # Trigger on PRs to the main branch
+      - main
 
 jobs:
   cppcheck:
@@ -16,17 +16,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up GCC and dependencies
+    - name: Install Cppcheck
       run: |
         sudo apt-get update
-        sudo apt-get install -y cppcheck  # Install Cppcheck
+        sudo apt-get install -y cppcheck  # Install Cppcheck on the runner
 
     - name: Run Cppcheck
       run: |
-        make lint  # Run the cppcheck command from the Makefile
+        cppcheck --enable=all --force --std=c99 main.c sensor.c utils.c  # Run cppcheck locally in GitHub Actions
 
     - name: Upload cppcheck report
-      uses: actions/upload-artifact@v3  # Updated to version 3
+      uses: actions/upload-artifact@v3
       with:
         name: cppcheck-report
         path: cppcheck_report.txt
