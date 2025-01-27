@@ -1,45 +1,32 @@
-name: Build and Test Project
+name: CMake and GoogleTest CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      # Set up GCC for compiling the project
       - name: Set up GCC
-        run: sudo apt-get install build-essential gcc g++ make
+        run: sudo apt-get install build-essential
 
-      # Install GoogleTest (Optional: You can also install via package manager)
-      - name: Install GoogleTest
-        run: |
-          sudo apt-get install -y libgtest-dev cmake
-          cd /usr/src/gtest
-          sudo cmake CMakeLists.txt
-          sudo make
-          sudo cp libgtest*.a /usr/lib
-
-      # Install Cppcheck
-      - name: Install Cppcheck
+      - name: Install cppcheck
         run: sudo apt-get install cppcheck
 
-      # Run Cppcheck for static analysis
-      - name: Run Cppcheck
-        run: cppcheck --enable=all --inconclusive --std=c99 src/ > cppcheck_report.txt
+      - name: Run Static Analysis (Cppcheck)
+        run: make lint  # This runs the 'lint' target from the Makefile
 
-      # Run Unit Tests with GoogleTest
-      - name: Build and run tests
+      - name: Set up GoogleTest
         run: |
-          make test
+          git submodule update --init --recursive
 
-      # Upload Cppcheck report as artifact
-      - name: Upload Cppcheck report
-        uses: actions/upload-artifact@v2
-        with:
-          name: cppcheck-report
-          path: cppcheck_report.txt
+      - name: Build and Run Tests
+        run: make test  # This runs the 'test' target from the Makefile
