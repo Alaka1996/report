@@ -1,4 +1,4 @@
-name: CMake and GoogleTest CI
+name: Build and Test
 
 on:
   push:
@@ -13,20 +13,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v2
 
-      - name: Set up GCC
-        run: sudo apt-get install build-essential
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cppcheck
 
-      - name: Install cppcheck
-        run: sudo apt-get install cppcheck
-
-      - name: Run Static Analysis (Cppcheck)
-        run: make lint  # This runs the 'lint' target from the Makefile
-
-      - name: Set up GoogleTest
+      - name: Set up GoogleTest Submodule
         run: |
           git submodule update --init --recursive
 
-      - name: Build and Run Tests
-        run: make test  # This runs the 'test' target from the Makefile
+      - name: Run Static Analysis (Cppcheck)
+        run: make lint  # Calls the 'lint' target from the Makefile
+
+      - name: Run Unit Tests (GoogleTest)
+        run: make test  # Calls the 'test' target from the Makefile
