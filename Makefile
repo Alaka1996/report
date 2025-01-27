@@ -34,6 +34,7 @@ lint:
 	@echo "Running cppcheck..."
 	@cppcheck --enable=all --inconclusive --std=c99 $(SRC) > $(REPORT)
 	@echo "Cppcheck completed. Check $(REPORT) for issues."
+	@cat $(REPORT)  # Output the contents of the cppcheck report to the console
 
 # GoogleTest Build and Run
 test: $(OBJ)
