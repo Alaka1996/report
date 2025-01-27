@@ -1,5 +1,6 @@
 #include "utils.h"
 #include <stdio.h>
+#include <stdint.h>
 
 #define BUFFER_SIZE 10
 
