@@ -28,6 +28,7 @@ lint:
 		--suppress=missingIncludeSystem \
 		--check-config \
 		--force \
+		--enable=warning,performance,portability,debug,style \
 		$(SRC) > $(REPORT)
 	@echo "Cppcheck completed. Check $(REPORT) for issues."
 	@cat $(REPORT)  # Output the contents of the cppcheck report to the console
