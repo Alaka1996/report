@@ -15,7 +15,8 @@ TEST(SensorTest, TestBufferOverflow) {
     read_sensor_data(data);  // Function under test
     
     // No direct way to detect overflow in this test, but we can check if data is not corrupted.
-    EXPECT_GE(data[BUFFER_SIZE - 1], 0);  // Example to check last element isn't 0
+    EXPECT_NE(data[BUFFER_SIZE - 1], 0);  // Example to check last element isn't 0
+    free(data);
 }
 
 // Test case for average calculation
