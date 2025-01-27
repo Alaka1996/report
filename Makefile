@@ -1,63 +1,49 @@
+# Compiler and Flags
 CC = gcc
 CXX = g++
-CFLAGS = -Wall -Iinclude -Iexternal/googletest/googletest/include -Wno-unused-function
-SRC_DIR = src
-OBJ_DIR = obj
-BIN_DIR = bin
+CFLAGS = -Wall -Wextra -std=c99 -g
+CXXFLAGS = -Wall -Wextra -std=c++11 -g
 
-# Source files
-SRC = $(wildcard $(SRC_DIR)/*.c)
-OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
-MAIN_OBJ = $(OBJ_DIR)/main.o
-UTILS_OBJ = $(OBJ_DIR)/utils.o
-SENSOR_OBJ = $(OBJ_DIR)/sensor.o
-TEST_OBJ = $(OBJ_DIR)/test_sensor.o
+# Source Files
+SRC = main.c sensor.c utils.c
+OBJ = $(SRC:.c=.o)
 
-# Google Test flags
-CXXFLAGS = -Wall -Iinclude -Iexternal/googletest/googletest/include -Wno-unused-function
-LDFLAGS = -Lexternal/googletest/googletest/lib -lgtest -lgtest_main -pthread
+# Include Directories
+INCLUDE = -I./include
+
+# GoogleTest Setup (submodule path)
+GTEST_DIR = ./googletest/googletest
+
+# Binary and Output
+EXEC = program
+REPORT = cppcheck_report.txt
+
+# GoogleTest Build
+GTEST_LIBS = -lgtest -lgtest_main -pthread
 
 # Targets
-all: dirs $(BIN_DIR)/sensor_program $(BIN_DIR)/test_sensor
 
-# Create directories
-dirs:
-	mkdir -p $(OBJ_DIR) $(BIN_DIR)
+# Default target to build the program
+all: $(EXEC)
 
-# Build the main program
-$(BIN_DIR)/sensor_program: $(MAIN_OBJ) $(SENSOR_OBJ) $(UTILS_OBJ)
-	$(CC) $(CFLAGS) $^ -o $@
+$(EXEC): $(OBJ)
+	$(CC) $(OBJ) -o $(EXEC)
 
-# Build the test binary
-$(BIN_DIR)/test_sensor: $(TEST_OBJ) $(SENSOR_OBJ) $(UTILS_OBJ)
-	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -o $@
+# Cppcheck Static Analysis
+cppcheck:
+	@echo "Running Cppcheck..."
+	@cppcheck --enable=all --inconclusive --std=c99 $(SRC) > $(REPORT)
+	@echo "Cppcheck completed. Check $(REPORT) for issues."
 
-# Compile main source file
-$(OBJ_DIR)/main.o: main.c
-	$(CC) $(CFLAGS) -c $< -o $@
+# GoogleTest Build and Run
+test: $(OBJ)
+	@echo "Running GoogleTest..."
+	$(CXX) $(OBJ) -o test_program $(GTEST_DIR)/src/gtest_main.cc $(GTEST_DIR)/src/gtest-all.cc $(OBJ) -lgtest -lgtest_main -pthread $(INCLUDE)
+	./test_program
 
-# Compile test file
-$(OBJ_DIR)/test_sensor.o: tests/test_sensor.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-# Compile sensor source file
-$(OBJ_DIR)/sensor.o: src/sensor.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Compile utils source file
-$(OBJ_DIR)/utils.o: src/utils.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Clean build artifacts
+# Clean Up
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
+	rm -f $(OBJ) $(EXEC) test_program
 
-# Run Cppcheck
-lint:
-	cppcheck --enable=all --inconclusive --std=c99 --force main.c
-
-# Run the tests (Google Test)
-test: $(BIN_DIR)/test_sensor
-	$(BIN_DIR)/test_sensor
-
-.PHONY: all dirs clean lint debug test
+# Rebuild the project
+rebuild: clean all
