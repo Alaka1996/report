@@ -22,10 +22,15 @@ $(EXEC): $(OBJ)
 
 # Cppcheck Static Analysis (focus on memory issues and buffer overflows)
 # Cppcheck Static Analysis
+# Cppcheck Static Analysis
 lint:
 	@echo "Running cppcheck..."
-	@cppcheck --enable=all --force --std=c99 $(SRC) 2>&1
+	@cppcheck --enable=all --force --std=c99 \
+		--suppress=missingInclude \
+		--suppress=missingIncludeSystem \
+		$(SRC) 2>&1  # Suppressing missing include warnings
 	@echo "Cppcheck completed."
+
 
 # Clean Up
 clean:
