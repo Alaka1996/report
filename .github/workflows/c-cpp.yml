@@ -34,5 +34,4 @@ jobs:
 
     - name: Build and run tests
       run: |
-        cd your-repo
-        make test
+        make test  # Run your test using the Makefile without changing directories
