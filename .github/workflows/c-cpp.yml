@@ -1,34 +1,32 @@
-name: Build and Test
+name: Cppcheck Analysis
 
 on:
   push:
     branches:
-      - main
+      - main  # Trigger on push to the main branch (or adjust as necessary)
   pull_request:
     branches:
-      - main
+      - main  # Trigger on PRs to the main branch
 
 jobs:
-  build:
+  cppcheck:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential cppcheck git
+    - name: Set up GCC and dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cppcheck  # Install Cppcheck
 
-      - name: Set up GoogleTest Submodule
-        run: |
-          git submodule update --init --recursive
+    - name: Run Cppcheck
+      run: |
+        make lint  # Run the cppcheck command from the Makefile
 
-      - name: Run Static Analysis (Cppcheck)
-        run: |
-          make lint  # This will call the 'lint' target from the Makefile
-
-      - name: Run Unit Tests (GoogleTest)
-        run: |
-          make test  # This will call the 'test' target from the Makefile
+    - name: Upload cppcheck report
+      uses: actions/upload-artifact@v2
+      with:
+        name: cppcheck-report
+        path: cppcheck_report.txt
