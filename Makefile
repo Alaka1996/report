@@ -21,17 +21,11 @@ $(EXEC): $(OBJ)
 	$(CC) $(OBJ) -o $(EXEC)
 
 # Cppcheck Static Analysis (focus on memory issues and buffer overflows)
+# Cppcheck Static Analysis
 lint:
 	@echo "Running cppcheck..."
-	@cppcheck --enable=all --inconclusive --std=c99 \
-		--suppress=missingInclude \
-		--suppress=missingIncludeSystem \
-		--check-config \
-		--force \
-		--enable=warning,performance,portability,debug,style \
-		$(SRC) > $(REPORT)
-	@echo "Cppcheck completed. Check $(REPORT) for issues."
-	@cat $(REPORT)  # Output the contents of the cppcheck report to the console
+	@cppcheck --enable=all --force --std=c99 $(SRC) 2>&1
+	@echo "Cppcheck completed."
 
 # Clean Up
 clean:
