@@ -16,14 +16,24 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Install cppcheck
-      run: sudo apt-get install -y cppcheck
+    - name: Initialize submodules
+      run: git submodule update --init --recursive
 
-    - name: Run cppcheck
+    - name: Install dependencies
+      run: sudo apt-get install -y build-essential cppcheck cmake
+
+    - name: Build Google Test
+      run: |
+        mkdir -p third_party/googletest/build
+        cd third_party/googletest/build
+        cmake ..
+        make
+        sudo cp lib/libgtest*.a /usr/lib/
+
+    - name: Run Cppcheck
       run: make cppcheck
 
-    - name: Install Google Test
-      run: sudo apt-get install -y libgtest-dev cmake && cd /usr/src/gtest && sudo cmake . && sudo make && sudo mv libg* /usr/lib/
-
     - name: Build and Run Tests
-      run: make test
+      run: |
+        make tests
+        make test
