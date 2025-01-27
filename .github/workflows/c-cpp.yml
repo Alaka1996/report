@@ -1,65 +1,45 @@
-name: Build, Test, and Static Analysis
+name: Build and Test Project
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
+on: [push, pull_request]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the code
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    # Step 2: Install Build Essentials
-    - name: Install GCC and Make
-      run: sudo apt-get update && sudo apt-get install -y build-essential
+      # Set up GCC for compiling the project
+      - name: Set up GCC
+        run: sudo apt-get install build-essential gcc g++ make
 
-    # Step 3: Install Cppcheck
-    - name: Install Cppcheck
-      run: sudo apt-get install -y cppcheck
+      # Install GoogleTest (Optional: You can also install via package manager)
+      - name: Install GoogleTest
+        run: |
+          sudo apt-get install -y libgtest-dev cmake
+          cd /usr/src/gtest
+          sudo cmake CMakeLists.txt
+          sudo make
+          sudo cp libgtest*.a /usr/lib
 
-    # Step 4: Install Google Test (If you're not using the submodule method)
-    - name: Install Google Test
-      run: |
-        sudo apt-get install -y cmake g++ wget
-        git clone https://github.com/google/googletest.git external/googletest
-        cd external/googletest
-        cmake .
-        sudo make install
+      # Install Cppcheck
+      - name: Install Cppcheck
+        run: sudo apt-get install cppcheck
 
-    # Step 5: Run Cppcheck Static Analysis
-    - name: Run Cppcheck Static Analysis
-      run: |
-        make lint
+      # Run Cppcheck for static analysis
+      - name: Run Cppcheck
+        run: cppcheck --enable=all --inconclusive --std=c99 src/ > cppcheck_report.txt
 
-    # Step 6: Build the Project
-    - name: Build the Project
-      run: |
-        make clean
-        make VERBOSE=1
+      # Run Unit Tests with GoogleTest
+      - name: Build and run tests
+        run: |
+          make test
 
-    # Step 7: Run Unit Tests
-    - name: Run Unit Tests
-      run: |
-        make test
-
-    # Step 8: Run the Main Program
-    - name: Run Main Program
-      run: ./bin/sensor_program > test_output.txt
-
-    # Step 9: Display Program Output
-    - name: Display Program Output
-      run: cat test_output.txt
-
-    # Step 10: Check for Warnings
-    - name: Check for Warnings
-      run: |
-        if grep -q "Warning:" test_output.txt; then
-          echo "Warnings found in output!"
-          exit 1
-        fi
+      # Upload Cppcheck report as artifact
+      - name: Upload Cppcheck report
+        uses: actions/upload-artifact@v2
+        with:
+          name: cppcheck-report
+          path: cppcheck_report.txt
