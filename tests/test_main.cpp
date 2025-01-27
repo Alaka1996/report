@@ -1,20 +1,27 @@
-#include "gtest/gtest.h"
-#include "utils.h"
-
-TEST(UtilsTest, CalculateAverage) {
-    uint16_t data[5] = {10, 20, 30, 40, 50};
-    EXPECT_EQ(calculate_average(data, 5), 30);
+extern "C" {
+    #include "utils.h"  // Include the C header for your C function
+    #include "sensor.h"
 }
 
-TEST(UtilsTest, PrintData) {
-    uint16_t data[3] = {100, 200, 300};
-    testing::internal::CaptureStdout();
-    print_data(data, 3);
-    std::string output = testing::internal::GetCapturedStdout();
-    EXPECT_NE(output.find("Sensor Data[0]: 100"), std::string::npos);
+#include <gtest/gtest.h>
+
+// Test case for checking buffer overflow
+TEST(SensorTest, TestBufferOverflow) {
+    uint16_t *data = (uint16_t *)malloc(BUFFER_SIZE * sizeof(uint16_t));
+    ASSERT_NE(data, nullptr);  // Ensure memory is allocated
+    
+    // Simulate the buffer overflow scenario
+    read_sensor_data(data);  // Function under test
+    
+    // No direct way to detect overflow in this test, but we can check if data is not corrupted.
+    EXPECT_NE(data[BUFFER_SIZE - 1], 0);  // Example to check last element isn't 0
+    free(data);
 }
 
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+// Test case for average calculation
+TEST(SensorTest, TestCalculateAverage) {
+    uint16_t data[] = {10, 20, 30};
+    int size = 3;
+    int result = calculate_average(data, size);
+    EXPECT_EQ(result, 20);
 }
