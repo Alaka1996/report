@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 extern "C" {
 #include "utils.h"  // Include the C header for your C function
+#define BUFFER_SIZE 10
 }
 
 TEST(SensorTest, TestBufferOverflow) {
