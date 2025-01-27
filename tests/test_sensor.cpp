@@ -2,6 +2,7 @@
 extern "C" {
 #include "utils.h"  // Include the C header for your C function
 #define BUFFER_SIZE 10
+#include "sensor.h" 
 }
 
 TEST(SensorTest, TestBufferOverflow) {
