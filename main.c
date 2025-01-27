@@ -17,6 +17,4 @@ void main() {
     process_data(sensor_data);
     print_data(sensor_data, BUFFER_SIZE);
 
-    free(sensor_data);  // Free allocated memory
-    return 0;
 }
