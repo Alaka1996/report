@@ -1,16 +1,12 @@
 # Compiler and Flags
 CC = gcc
 CXX = g++
-CFLAGS = -Wall -Wextra -std=c99 -g
-CXXFLAGS = -Wall -Wextra -std=c++11 -g
+CFLAGS = -Wall -Wextra -std=c99 -g -I./include  # Add -I./include to specify the location of header files
+CXXFLAGS = -Wall -Wextra -std=c++11 -g -I./include  # Same for C++ flags
 
 # Source Files
 SRC = main.c sensor.c utils.c
 OBJ = $(SRC:.c=.o)
-
-# Include Directories
-INCLUDE = -I./include  # Ensure the local headers are found
-SYS_INCLUDE = -I/usr/include  # Standard system includes (if needed)
 
 # GoogleTest Setup (submodule path)
 GTEST_DIR = ./googletest/googletest
@@ -33,7 +29,7 @@ $(EXEC): $(OBJ)
 # Cppcheck Static Analysis
 lint:
 	@echo "Running cppcheck..."
-	@cppcheck --enable=all --inconclusive --std=c99 $(SYS_INCLUDE) $(INCLUDE) $(SRC) > $(REPORT)
+	@cppcheck --enable=all --inconclusive --std=c99 $(INCLUDE) $(SRC) > $(REPORT)
 	@echo "Cppcheck completed. Check $(REPORT) for issues."
 	@cat $(REPORT)  # Output the contents of the cppcheck report to the console
 
