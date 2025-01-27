@@ -9,7 +9,8 @@ SRC = main.c sensor.c utils.c
 OBJ = $(SRC:.c=.o)
 
 # Include Directories
-INCLUDE = -I./include
+INCLUDE = -I./include  # Ensure the local headers are found
+SYS_INCLUDE = -I/usr/include  # Standard system includes (if needed)
 
 # GoogleTest Setup (submodule path)
 GTEST_DIR = ./googletest/googletest
@@ -32,7 +33,7 @@ $(EXEC): $(OBJ)
 # Cppcheck Static Analysis
 lint:
 	@echo "Running cppcheck..."
-	@cppcheck --enable=all --inconclusive --std=c99 $(SRC) > $(REPORT)
+	@cppcheck --enable=all --inconclusive --std=c99 $(SYS_INCLUDE) $(INCLUDE) $(SRC) > $(REPORT)
 	@echo "Cppcheck completed. Check $(REPORT) for issues."
 	@cat $(REPORT)  # Output the contents of the cppcheck report to the console
 
