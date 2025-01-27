@@ -6,11 +6,11 @@
 
 #define BUFFER_SIZE 10
 
-int main() {
+void main() {
     uint16_t *sensor_data = (uint16_t *)malloc(BUFFER_SIZE);  
     if (!sensor_data) {
         printf("Memory allocation failed!\n");
-        return 1;
+        return;
     }
 
     read_sensor_data(sensor_data);
